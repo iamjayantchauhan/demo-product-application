@@ -5,6 +5,7 @@ A modern web application built with Spring Boot and HTMX that provides a dynamic
 ## 🚀 Features
 
 ### Core Functionality
+
 - **Dynamic Product Management**: Complete CRUD operations without page reloads
 - **Real-time UI Updates**: HTMX-powered interface for seamless user experience
 - **External API Integration**: Automated product fetching from external sources
@@ -12,6 +13,7 @@ A modern web application built with Spring Boot and HTMX that provides a dynamic
 - **Database Persistence**: PostgreSQL with JSONB support for complex data structures
 
 ### Technical Highlights
+
 - **Spring Boot 3.3.4** with Kotlin
 - **HTMX 1.9.6** for dynamic interactions
 - **PostgreSQL** database with Flyway migrations
@@ -22,17 +24,17 @@ A modern web application built with Spring Boot and HTMX that provides a dynamic
 
 ## 🛠️ Tech Stack
 
-| Component | Technology | Version |
-|-----------|------------|---------|
-| **Backend** | Spring Boot | 3.3.4 |
-| **Language** | Kotlin | Latest |
-| **Database** | PostgreSQL | 17.6+ |
-| **Migration** | Flyway | Latest |
-| **Frontend** | HTMX | 1.9.6 |
-| **Templating** | Thymeleaf | Latest |
-| **UI Framework** | Web Awesome | Latest |
-| **Build Tool** | Gradle | 8.14.3 |
-| **JVM** | Java | 17 |
+| Component        | Technology  | Version |
+| ---------------- | ----------- | ------- |
+| **Backend**      | Spring Boot | 3.3.4   |
+| **Language**     | Kotlin      | Latest  |
+| **Database**     | PostgreSQL  | 17.6+   |
+| **Migration**    | Flyway      | Latest  |
+| **Frontend**     | HTMX        | 1.9.6   |
+| **Templating**   | Thymeleaf   | Latest  |
+| **UI Framework** | Web Awesome | Latest  |
+| **Build Tool**   | Gradle      | 8.14.3  |
+| **JVM**          | Java        | 17      |
 
 ## 📋 Prerequisites
 
@@ -46,6 +48,7 @@ Before running this application, ensure you have:
 ## 🚀 Quick Start
 
 ### 1. Clone the Repository
+
 ```bash
 git clone <repository-url>
 cd DemoForGreg
@@ -54,13 +57,16 @@ cd DemoForGreg
 ### 2. Database Setup
 
 #### Option A: Using Docker Compose (Recommended)
+
 ```bash
 docker-compose up -d
 ```
 
 #### Option B: Manual PostgreSQL Setup
+
 1. Install PostgreSQL 17.6+
 2. Create database:
+
 ```sql
 CREATE DATABASE demo_for_greg;
 CREATE USER demo_user WITH PASSWORD 'demo_password';
@@ -68,7 +74,9 @@ GRANT ALL PRIVILEGES ON DATABASE demo_for_greg TO demo_user;
 ```
 
 ### 3. Configure Application
+
 Update `src/main/resources/application.properties` if needed:
+
 ```properties
 spring.datasource.url=jdbc:postgresql://localhost:5432/demo_for_greg
 spring.datasource.username=demo_user
@@ -76,11 +84,13 @@ spring.datasource.password=demo_password
 ```
 
 ### 4. Run the Application
+
 ```bash
 ./gradlew bootRun
 ```
 
 ### 5. Access the Application
+
 Open your browser and navigate to: **http://localhost:8080**
 
 ## 🎯 Usage Guide
@@ -88,10 +98,12 @@ Open your browser and navigate to: **http://localhost:8080**
 ### Product Management Interface
 
 1. **Load Products**
+
    - Click the "Load Products" button to display all products from the database
    - Products are fetched automatically from external API every hour
 
 2. **Add New Product**
+
    - Fill in the form fields:
      - Title (required)
      - Price (required, decimal format)
@@ -100,6 +112,7 @@ Open your browser and navigate to: **http://localhost:8080**
    - Click "Add Product" - the new product appears instantly in the table
 
 3. **Edit Existing Products**
+
    - Click the "Edit" button on any product row
    - Modify the values in the inline form
    - Click "Save" - changes update immediately
@@ -113,6 +126,7 @@ All operations happen **without page reloads** thanks to HTMX integration!
 ## 🏗️ Architecture
 
 ### Project Structure
+
 ```
 src/
 ├── main/
@@ -133,18 +147,22 @@ src/
 ### Key Components
 
 #### Controllers
+
 - **ProductController**: Handles all product-related HTTP requests
 - HTMX-compatible endpoints returning template fragments
 
 #### Services
+
 - **ProductService**: Core business logic for product operations
 - **ProductFetchService**: Scheduled service for external API integration
 
 #### Repository Layer
+
 - **ProductRepository**: Database operations using JdbcClient
 - Modern Spring Data access patterns
 
 #### Database Schema
+
 - **products** table with JSONB support for flexible data storage
 - Flyway migrations for version-controlled schema changes
 
@@ -159,6 +177,7 @@ The application automatically fetches product data from `https://famme.no/produc
 - **Error Handling**: Robust error handling with logging
 
 ### API Data Flow
+
 1. Scheduled job triggers every hour
 2. WebClient fetches JSON data from external API
 3. Jackson deserializes JSON to Kotlin data classes
@@ -168,17 +187,20 @@ The application automatically fetches product data from `https://famme.no/produc
 ## 🎨 Frontend Architecture
 
 ### HTMX Integration
+
 - **hx-get**: Load content dynamically
 - **hx-post**: Submit forms via AJAX
 - **hx-target**: Update specific page sections
 - **hx-swap**: Control how content is updated
 
 ### Template Structure
+
 - **index.html**: Main page layout
 - **fragments/products-table.html**: Product table component
 - **fragments/edit-product.html**: Inline edit form component
 
 ### Web Awesome Styling
+
 - Modern design system with CSS custom properties
 - Responsive layout components
 - Consistent visual hierarchy
@@ -186,6 +208,7 @@ The application automatically fetches product data from `https://famme.no/produc
 ## 🗄️ Database Schema
 
 ### Products Table
+
 ```sql
 CREATE TABLE products (
     id SERIAL PRIMARY KEY,
@@ -201,6 +224,7 @@ CREATE TABLE products (
 ```
 
 ### Features
+
 - **JSONB Column**: Stores complex product variants efficiently
 - **Unique Constraints**: Prevents duplicate external products
 - **Timestamps**: Automatic tracking of record changes
@@ -209,12 +233,14 @@ CREATE TABLE products (
 ## 🚀 Deployment
 
 ### Production Configuration
+
 1. Update database configuration for production
 2. Configure external API endpoints
 3. Set appropriate logging levels
 4. Enable production profiles
 
 ### Docker Deployment
+
 ```bash
 # Build application
 ./gradlew build
@@ -226,6 +252,7 @@ docker-compose -f docker-compose.prod.yml up -d
 ## 🧪 Testing
 
 ### Running Tests
+
 ```bash
 # Run all tests
 ./gradlew test
@@ -235,6 +262,7 @@ docker-compose -f docker-compose.prod.yml up -d
 ```
 
 ### Manual Testing Checklist
+
 - [ ] Load products from database
 - [ ] Add new product via form
 - [ ] Edit existing product inline
@@ -246,12 +274,14 @@ docker-compose -f docker-compose.prod.yml up -d
 ## 🔧 Development
 
 ### Adding New Features
+
 1. Create feature branch: `git checkout -b feature/new-feature`
 2. Implement changes following existing patterns
 3. Update tests and documentation
 4. Submit pull request
 
 ### Code Style
+
 - Kotlin coding conventions
 - Spring Boot best practices
 - HTMX progressive enhancement principles
@@ -262,16 +292,19 @@ docker-compose -f docker-compose.prod.yml up -d
 ### Common Issues
 
 **Database Connection Issues**
+
 - Verify PostgreSQL is running
 - Check connection credentials
 - Ensure database exists
 
 **External API Issues**
+
 - Check network connectivity
 - Verify API endpoint accessibility
 - Review JSON deserialization logs
 
 **HTMX Not Working**
+
 - Ensure HTMX library is loaded
 - Check browser developer tools for JavaScript errors
 - Verify HTMX attributes are correctly set
@@ -280,14 +313,14 @@ docker-compose -f docker-compose.prod.yml up -d
 
 ### Endpoints
 
-| Method | Endpoint | Description | Response |
-|--------|----------|-------------|----------|
-| GET | `/` | Main application page | HTML |
-| GET | `/api/products` | Load all products | HTML fragment |
-| POST | `/api/products` | Create new product | HTML fragment |
-| GET | `/api/products/{id}/edit` | Get edit form | HTML fragment |
-| POST | `/api/products/{id}` | Update product | HTML fragment |
-| DELETE | `/api/products/{id}` | Delete product | HTTP 200 |
+| Method | Endpoint                  | Description           | Response      |
+| ------ | ------------------------- | --------------------- | ------------- |
+| GET    | `/`                       | Main application page | HTML          |
+| GET    | `/api/products`           | Load all products     | HTML fragment |
+| POST   | `/api/products`           | Create new product    | HTML fragment |
+| GET    | `/api/products/{id}/edit` | Get edit form         | HTML fragment |
+| POST   | `/api/products/{id}`      | Update product        | HTML fragment |
+| DELETE | `/api/products/{id}`      | Delete product        | HTTP 200      |
 
 ## 🤝 Contributing
 
