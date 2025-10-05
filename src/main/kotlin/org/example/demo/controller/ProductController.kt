@@ -54,6 +54,7 @@ class ProductController(private val productService: ProductService) {
     }
 
     @PutMapping("/products/{id}")
+    @PostMapping("/products/{id}")
     fun updateProduct(
         @PathVariable id: Long,
         @RequestParam title: String,
