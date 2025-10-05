@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Products - Product Manager</title>
+
+    <!-- Web Awesome CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/@webawesome/kit@latest/dist/theme/light.css">
+
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+
+    <!-- Reuse styles from main page -->
+    <style>
+        :root {
+            --wa-color-primary: #0066cc;
+            --wa-color-primary-hover: #0052a3;
+            --wa-color-success: #28a745;
+            --wa-color-danger: #dc3545;
+            --wa-color-warning: #ffc107;
+            --wa-color-info: #17a2b8;
+            --wa-color-light: #f8f9fa;
+            --wa-color-dark: #343a40;
+            --wa-color-white: #ffffff;
+            --wa-color-gray-100: #f8f9fa;
+            --wa-color-gray-200: #e9ecef;
+            --wa-color-gray-300: #dee2e6;
+            --wa-color-gray-400: #ced4da;
+            --wa-color-gray-500: #adb5bd;
+            --wa-color-gray-600: #6c757d;
+            --wa-color-gray-700: #495057;
+            --wa-color-gray-800: #343a40;
+            --wa-color-gray-900: #212529;
+
+            --wa-spacing-xs: 0.25rem;
+            --wa-spacing-sm: 0.5rem;
+            --wa-spacing-md: 1rem;
+            --wa-spacing-lg: 1.5rem;
+            --wa-spacing-xl: 3rem;
+
+            --wa-border-radius: 0.375rem;
+            --wa-border-radius-lg: 0.5rem;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: var(--wa-spacing-xl);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--wa-color-white);
+            border-radius: var(--wa-border-radius-lg);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--wa-color-primary) 0%, var(--wa-color-info) 100%);
+            color: var(--wa-color-white);
+            padding: var(--wa-spacing-xl);
+            text-align: center;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .header p {
+            margin: var(--wa-spacing-sm) 0 0 0;
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .content {
+            padding: var(--wa-spacing-xl);
+        }
+
+        .search-container {
+            margin-bottom: var(--wa-spacing-xl);
+        }
+
+        .search-box {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: var(--wa-spacing-lg);
+            padding-left: 3rem;
+            font-size: 1.1rem;
+            border: 2px solid var(--wa-color-gray-300);
+            border-radius: var(--wa-border-radius-lg);
+            background: var(--wa-color-white);
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--wa-color-primary);
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: var(--wa-spacing-lg);
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--wa-color-gray-500);
+            font-size: 1.2rem;
+        }
+
+        .navigation {
+            margin-bottom: var(--wa-spacing-lg);
+            text-align: center;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--wa-spacing-sm);
+            padding: var(--wa-spacing-sm) var(--wa-spacing-lg);
+            border: none;
+            border-radius: var(--wa-border-radius);
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-secondary {
+            background-color: var(--wa-color-gray-600);
+            color: var(--wa-color-white);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--wa-color-gray-700);
+            transform: translateY(-1px);
+        }
+
+        .table-container {
+            background: var(--wa-color-white);
+            border-radius: var(--wa-border-radius);
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th {
+            background: var(--wa-color-gray-100);
+            padding: var(--wa-spacing-lg);
+            text-align: left;
+            font-weight: 600;
+            color: var(--wa-color-dark);
+            border-bottom: 2px solid var(--wa-color-gray-200);
+        }
+
+        .table td {
+            padding: var(--wa-spacing-lg);
+            border-bottom: 1px solid var(--wa-color-gray-200);
+            vertical-align: middle;
+        }
+
+        .table tr:hover {
+            background-color: var(--wa-color-gray-50);
+        }
+
+        .product-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: var(--wa-border-radius);
+        }
+
+        .product-title {
+            font-weight: 600;
+            color: var(--wa-color-dark);
+        }
+
+        .product-price {
+            font-weight: 700;
+            color: var(--wa-color-success);
+            font-size: 1.1rem;
+        }
+
+        .product-description {
+            color: var(--wa-color-gray-600);
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .search-stats {
+            margin-bottom: var(--wa-spacing-lg);
+            padding: var(--wa-spacing-md);
+            background: var(--wa-color-gray-100);
+            border-radius: var(--wa-border-radius);
+            text-align: center;
+            color: var(--wa-color-gray-700);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: var(--wa-spacing-xl);
+            color: var(--wa-color-gray-500);
+        }
+
+        .loading {
+            text-align: center;
+            padding: var(--wa-spacing-xl);
+            color: var(--wa-color-primary);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-search"></i> Search Products</h1>
+            <p>Find products by typing in the search box below</p>
+        </div>
+
+        <div class="content">
+            <div class="navigation">
+                <a href="/" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Main Page
+                </a>
+            </div>
+
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="search-input" placeholder="Search products by title..."
+                        hx-get="/products/search" hx-target="#search-results" hx-trigger="keyup changed delay:300ms"
+                        hx-indicator=".loading" name="query" autocomplete="off">
+                </div>
+            </div>
+
+            <div class="loading" style="display: none;">
+                <i class="fas fa-spinner fa-spin"></i>
+                Searching products...
+            </div>
+
+            <div id="search-results">
+                <div class="search-stats">
+                    Start typing to search for products...
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

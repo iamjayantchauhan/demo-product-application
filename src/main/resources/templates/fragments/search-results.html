@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+</head>
+
+<body>
+    <div th:fragment="search-results">
+        <div class="search-stats" th:if="${products != null}">
+            <span th:if="${searchQuery != null and !searchQuery.isEmpty()}">
+                Found <strong th:text="${products.size()}">0</strong> products matching "<strong
+                    th:text="${searchQuery}">search</strong>"
+            </span>
+            <span th:if="${searchQuery == null or searchQuery.isEmpty()}">
+                Showing all <strong th:text="${products.size()}">0</strong> products
+            </span>
+        </div>
+
+        <div class="table-container" th:if="${products != null and !products.isEmpty()}">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Title</th>
+                        <th>Price</th>
+                        <th>Description</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="product : ${products}">
+                        <td>
+                            <img th:if="${product.imageUrl != null}" th:src="${product.imageUrl}"
+                                th:alt="${product.title}" class="product-image" onerror="this.style.display='none'">
+                            <div th:if="${product.imageUrl == null}"
+                                style="width: 60px; height: 60px; background: var(--wa-color-gray-200); border-radius: var(--wa-border-radius); display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-image" style="color: var(--wa-color-gray-400);"></i>
+                            </div>
+                        </td>
+                        <td class="product-title" th:text="${product.title}">Product Title</td>
+                        <td class="product-price">$<span th:text="${product.price}">0.00</span></td>
+                        <td class="product-description" th:text="${product.description ?: 'No description'}">Description
+                        </td>
+                        <td>
+                            <a th:href="@{'/products/' + ${product.id} + '/edit-page'}" class="btn btn-primary btn-sm">
+                                <i class="fas fa-edit"></i>
+                                Edit
+                            </a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="empty-state" th:if="${products != null and products.isEmpty()}">
+            <i class="fas fa-search fa-3x"
+                style="color: var(--wa-color-gray-400); margin-bottom: var(--wa-spacing-md);"></i>
+            <h3>No products found</h3>
+            <p th:if="${searchQuery != null and !searchQuery.isEmpty()}">
+                No products match "<strong th:text="${searchQuery}">search</strong>". Try a different search term.
+            </p>
+            <p th:if="${searchQuery == null or searchQuery.isEmpty()}">
+                No products available in the database.
+            </p>
+        </div>
+    </div>
+
+    <style>
+        .btn-sm {
+            padding: var(--wa-spacing-xs) var(--wa-spacing-sm);
+            font-size: 0.85rem;
+        }
+
+        .btn-primary {
+            background-color: var(--wa-color-primary);
+            color: var(--wa-color-white);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--wa-color-primary-hover);
+            transform: translateY(-1px);
+        }
+    </style>
+</body>
+
+</html>

@@ -111,6 +111,11 @@
             color: var(--wa-color-white);
         }
 
+        .btn-info {
+            background-color: var(--wa-color-info);
+            color: var(--wa-color-white);
+        }
+
         .btn-danger {
             background-color: var(--wa-color-danger);
             color: var(--wa-color-white);
@@ -295,6 +300,66 @@
             border-bottom: 2px solid var(--wa-color-gray-200);
             padding-bottom: var(--wa-spacing-sm);
         }
+
+        /* Delete Dialog Styles */
+        .delete-dialog {
+            padding: 0;
+            border: none;
+            border-radius: var(--wa-border-radius-lg);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .delete-dialog::backdrop {
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(2px);
+        }
+
+        .dialog-content {
+            padding: var(--wa-spacing-xl);
+        }
+
+        .dialog-header h3 {
+            margin: 0 0 var(--wa-spacing-lg) 0;
+            color: var(--wa-color-danger);
+            display: flex;
+            align-items: center;
+            gap: var(--wa-spacing-sm);
+        }
+
+        .dialog-body {
+            margin-bottom: var(--wa-spacing-xl);
+            line-height: 1.6;
+        }
+
+        .dialog-actions {
+            display: flex;
+            gap: var(--wa-spacing-md);
+            justify-content: flex-end;
+        }
+
+        .dialog-actions .btn {
+            min-width: 120px;
+        }
+
+        /* Actions and Export Styles */
+        .actions {
+            display: flex;
+            align-items: center;
+            gap: var(--wa-spacing-md);
+            margin-bottom: var(--wa-spacing-xl);
+        }
+
+        .btn-warning {
+            background-color: var(--wa-color-warning);
+            color: var(--wa-color-dark);
+        }
+
+        .btn-warning:hover {
+            background-color: #e0a800;
+            transform: translateY(-1px);
+        }
     </style>
 </head>
 
@@ -315,6 +380,22 @@
                 <i class="fas fa-plus"></i>
                 Add Product
             </button>
+
+            <a href="/search" class="btn btn-info">
+                <i class="fas fa-search"></i>
+                Search Products
+            </a>
+
+            <div class="export-buttons" style="margin-left: auto; display: flex; gap: var(--wa-spacing-sm);">
+                <a href="/products/export/csv" class="btn btn-warning" download>
+                    <i class="fas fa-file-csv"></i>
+                    Export CSV
+                </a>
+                <a href="/products/export/json" class="btn btn-warning" download>
+                    <i class="fas fa-file-code"></i>
+                    Export JSON
+                </a>
+            </div>
         </div>
 
         <!-- Add Product Form -->
@@ -420,7 +501,64 @@
         document.body.addEventListener('htmx:responseError', function (evt) {
             showToast('An error occurred. Please try again.', 'error');
         });
+
+        // Delete dialog functions
+        let deleteProductId = null;
+        let deleteProductTitle = '';
+
+        function openDeleteDialog(productId, productTitle) {
+            deleteProductId = productId;
+            deleteProductTitle = productTitle;
+            document.getElementById('delete-product-title').textContent = productTitle;
+            document.getElementById('delete-dialog').showModal();
+        }
+
+        function confirmDelete() {
+            if (deleteProductId) {
+                // Use HTMX to delete the product
+                htmx.ajax('DELETE', `/products/${deleteProductId}`, {
+                    target: '#products-table',
+                    swap: 'innerHTML'
+                }).then(() => {
+                    showToast(`Product "${deleteProductTitle}" deleted successfully!`, 'success');
+                    closeDeleteDialog();
+                }).catch(() => {
+                    showToast('Error deleting product', 'error');
+                    closeDeleteDialog();
+                });
+            }
+        }
+
+        function closeDeleteDialog() {
+            document.getElementById('delete-dialog').close();
+            deleteProductId = null;
+            deleteProductTitle = '';
+        }
     </script>
+
+    <!-- Delete Confirmation Dialog -->
+    <dialog id="delete-dialog" class="delete-dialog">
+        <div class="dialog-content">
+            <div class="dialog-header">
+                <h3><i class="fas fa-exclamation-triangle"></i> Confirm Deletion</h3>
+            </div>
+            <div class="dialog-body">
+                <p>Are you sure you want to delete the product:</p>
+                <p><strong id="delete-product-title"></strong></p>
+                <p style="color: var(--wa-color-danger); font-size: 0.9rem;">This action cannot be undone.</p>
+            </div>
+            <div class="dialog-actions">
+                <button type="button" class="btn btn-danger" onclick="confirmDelete()">
+                    <i class="fas fa-trash"></i>
+                    Delete Product
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="closeDeleteDialog()">
+                    <i class="fas fa-times"></i>
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </dialog>
 </body>
 
 </html>

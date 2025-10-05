@@ -15,6 +15,10 @@ class ProductService(private val productRepository: ProductRepository) {
         return productRepository.findAll()
     }
 
+    fun searchProducts(query: String): List<Product> {
+        return productRepository.searchByTitle(query)
+    }
+
     fun getProductById(id: Long): Product? {
         return productRepository.findById(id)
     }

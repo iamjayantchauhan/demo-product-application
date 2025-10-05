@@ -11,8 +11,6 @@ import java.sql.ResultSet
 class ProductRepository(private val jdbcClient: JdbcClient) {
 
     fun save(product: Product): Product {
-        val keyHolder = GeneratedKeyHolder()
-        
         val sql = """
             INSERT INTO products (external_id, title, price, image_url, description, variants)
             VALUES (?, ?, ?, ?, ?, ?::jsonb)
@@ -27,7 +25,7 @@ class ProductRepository(private val jdbcClient: JdbcClient) {
             RETURNING id
         """.trimIndent()
 
-        jdbcClient.sql(sql)
+        val result = jdbcClient.sql(sql)
             .params(
                 product.externalId,
                 product.title,
@@ -36,15 +34,23 @@ class ProductRepository(private val jdbcClient: JdbcClient) {
                 product.description,
                 product.variants
             )
-            .update(keyHolder)
+            .query { rs, _ -> rs.getLong("id") }
+            .single()
 
-        val generatedId = keyHolder.key?.toLong() ?: product.id
-        return product.copy(id = generatedId)
+        return product.copy(id = result)
     }
 
     fun findAll(): List<Product> {
         val sql = "SELECT * FROM products ORDER BY title"
         return jdbcClient.sql(sql)
+            .query { rs, _ -> mapRowToProduct(rs) }
+            .list()
+    }
+
+    fun searchByTitle(query: String): List<Product> {
+        val sql = "SELECT * FROM products WHERE LOWER(title) LIKE ? ORDER BY title"
+        return jdbcClient.sql(sql)
+            .param("%${query.lowercase()}%")
             .query { rs, _ -> mapRowToProduct(rs) }
             .list()
     }

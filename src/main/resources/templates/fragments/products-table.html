@@ -8,6 +8,17 @@
 <body>
     <!-- Products Table Fragment -->
     <div th:fragment="products-table">
+        <style>
+            .btn-info {
+                background-color: var(--wa-color-info);
+                color: var(--wa-color-white);
+            }
+
+            .btn-info:hover {
+                background-color: #138496;
+                transform: translateY(-1px);
+            }
+        </style>
         <div th:if="${#lists.isEmpty(products)}" class="empty-state">
             <i class="fas fa-box-open fa-3x"
                 style="color: var(--wa-color-gray-400); margin-bottom: var(--wa-spacing-md);"></i>
@@ -55,11 +66,15 @@
                             th:attr="hx-get=@{'/products/' + ${product.id} + '/edit'}" hx-target="#edit-modal"
                             hx-trigger="click" style="margin-right: var(--wa-spacing-xs);">
                             <i class="fas fa-edit"></i>
-                            Edit
+                            Quick Edit
                         </button>
-                        <button class="btn btn-sm btn-danger" th:attr="hx-delete=@{'/products/' + ${product.id}}"
-                            hx-target="#products-table" hx-confirm="Are you sure you want to delete this product?"
-                            hx-on::after-request="if(event.detail.successful) showToast('Product deleted successfully!', 'success');">
+                        <a th:href="@{'/products/' + ${product.id} + '/edit-page'}" class="btn btn-sm btn-info"
+                            style="margin-right: var(--wa-spacing-xs);">
+                            <i class="fas fa-external-link-alt"></i>
+                            Full Edit
+                        </a>
+                        <button class="btn btn-sm btn-danger"
+                            th:attr="onclick=|openDeleteDialog(${product.id}, '${product.title}')|">
                             <i class="fas fa-trash"></i>
                             Delete
                         </button>
