@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*
 import java.math.BigDecimal
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import jakarta.servlet.http.HttpServletResponse
 
 @Controller
 class ProductController(private val productService: ProductService) {
@@ -94,7 +95,9 @@ class ProductController(private val productService: ProductService) {
         @RequestParam price: BigDecimal,
         @RequestParam(required = false) imageUrl: String?,
         @RequestParam(required = false) description: String?,
-        model: Model
+        model: Model,
+        @RequestHeader(value = "X-Requested-From", required = false) requestedFrom: String?,
+        response: HttpServletResponse
     ): String {
         val existingProduct = productService.getProductById(id)
         if (existingProduct != null) {
@@ -107,7 +110,13 @@ class ProductController(private val productService: ProductService) {
             productService.updateProduct(updatedProduct)
         }
         
-        // Return updated products table
+        // If request is from edit page, redirect to main page
+        if (requestedFrom == "edit-page") {
+            response.setHeader("HX-Redirect", "/")
+            return ""
+        }
+        
+        // Return updated products table for modal edits
         val products = productService.getAllProducts()
         model.addAttribute("products", products)
         return "fragments/products-table :: products-table"
