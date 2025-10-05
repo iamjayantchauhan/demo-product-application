@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Manager</title>
+
+    <!-- Web Awesome CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/@webawesome/kit@latest/dist/theme/light.css">
+
+    <!-- HTMX -->
+    <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+
+    <!-- Web Awesome Design Tokens CSS -->
+    <style>
+        :root {
+            --wa-color-primary: #0066cc;
+            --wa-color-primary-hover: #0052a3;
+            --wa-color-success: #28a745;
+            --wa-color-danger: #dc3545;
+            --wa-color-warning: #ffc107;
+            --wa-color-info: #17a2b8;
+            --wa-color-light: #f8f9fa;
+            --wa-color-dark: #343a40;
+            --wa-color-white: #ffffff;
+            --wa-color-gray-100: #f8f9fa;
+            --wa-color-gray-200: #e9ecef;
+            --wa-color-gray-300: #dee2e6;
+            --wa-color-gray-400: #ced4da;
+            --wa-color-gray-500: #adb5bd;
+            --wa-color-gray-600: #6c757d;
+            --wa-color-gray-700: #495057;
+            --wa-color-gray-800: #343a40;
+            --wa-color-gray-900: #212529;
+
+            --wa-spacing-xs: 0.25rem;
+            --wa-spacing-sm: 0.5rem;
+            --wa-spacing-md: 1rem;
+            --wa-spacing-lg: 1.5rem;
+            --wa-spacing-xl: 3rem;
+
+            --wa-border-radius: 0.375rem;
+            --wa-border-radius-lg: 0.5rem;
+            --wa-border-radius-xl: 0.75rem;
+
+            --wa-font-size-sm: 0.875rem;
+            --wa-font-size-base: 1rem;
+            --wa-font-size-lg: 1.125rem;
+            --wa-font-size-xl: 1.25rem;
+            --wa-font-size-2xl: 1.5rem;
+            --wa-font-size-3xl: 1.875rem;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: var(--wa-color-gray-100);
+            margin: 0;
+            padding: var(--wa-spacing-lg);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--wa-color-white);
+            padding: var(--wa-spacing-xl);
+            border-radius: var(--wa-border-radius-lg);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: var(--wa-spacing-xl);
+            padding-bottom: var(--wa-spacing-lg);
+            border-bottom: 2px solid var(--wa-color-gray-200);
+        }
+
+        .header h1 {
+            color: var(--wa-color-dark);
+            font-size: var(--wa-font-size-3xl);
+            margin: 0;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--wa-spacing-sm);
+            padding: var(--wa-spacing-sm) var(--wa-spacing-lg);
+            border: none;
+            border-radius: var(--wa-border-radius);
+            font-size: var(--wa-font-size-base);
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--wa-color-primary);
+            color: var(--wa-color-white);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--wa-color-primary-hover);
+        }
+
+        .btn-success {
+            background-color: var(--wa-color-success);
+            color: var(--wa-color-white);
+        }
+
+        .btn-danger {
+            background-color: var(--wa-color-danger);
+            color: var(--wa-color-white);
+        }
+
+        .btn-sm {
+            padding: var(--wa-spacing-xs) var(--wa-spacing-sm);
+            font-size: var(--wa-font-size-sm);
+        }
+
+        .table-container {
+            margin-top: var(--wa-spacing-xl);
+            overflow-x: auto;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--wa-color-white);
+            border-radius: var(--wa-border-radius);
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .table th {
+            background-color: var(--wa-color-gray-700);
+            color: var(--wa-color-white);
+            padding: var(--wa-spacing-md);
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .table td {
+            padding: var(--wa-spacing-md);
+            border-bottom: 1px solid var(--wa-color-gray-200);
+        }
+
+        .table tr:hover {
+            background-color: var(--wa-color-gray-100);
+        }
+
+        .product-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: var(--wa-border-radius);
+        }
+
+        .price {
+            font-weight: 600;
+            color: var(--wa-color-success);
+        }
+
+        .form-container {
+            background: var(--wa-color-gray-100);
+            padding: var(--wa-spacing-lg);
+            border-radius: var(--wa-border-radius);
+            margin-top: var(--wa-spacing-xl);
+            display: none;
+        }
+
+        .form-container.show {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: var(--wa-spacing-md);
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: var(--wa-spacing-xs);
+            font-weight: 500;
+            color: var(--wa-color-dark);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: var(--wa-spacing-sm);
+            border: 1px solid var(--wa-color-gray-300);
+            border-radius: var(--wa-border-radius);
+            font-size: var(--wa-font-size-base);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--wa-color-primary);
+            box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.2);
+        }
+
+        .form-row {
+            display: flex;
+            gap: var(--wa-spacing-md);
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        .loading {
+            text-align: center;
+            padding: var(--wa-spacing-xl);
+            color: var(--wa-color-gray-600);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: var(--wa-spacing-xl);
+            color: var(--wa-color-gray-600);
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: var(--wa-spacing-md);
+            border-radius: var(--wa-border-radius);
+            color: var(--wa-color-white);
+            font-weight: 500;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .toast.success {
+            background-color: var(--wa-color-success);
+        }
+
+        .toast.error {
+            background-color: var(--wa-color-danger);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-box"></i> Product Manager</h1>
+            <p>Manage your product catalog with ease</p>
+        </div>
+
+        <div class="actions">
+            <button class="btn btn-primary" hx-get="/products/load" hx-target="#products-table" hx-indicator=".loading">
+                <i class="fas fa-download"></i>
+                Load Products
+            </button>
+
+            <button class="btn btn-success" onclick="toggleAddForm()" id="add-product-btn">
+                <i class="fas fa-plus"></i>
+                Add Product
+            </button>
+        </div>
+
+        <!-- Add Product Form -->
+        <div class="form-container" id="add-product-form">
+            <h3><i class="fas fa-plus-circle"></i> Add New Product</h3>
+            <form hx-post="/products/add" hx-target="#products-table"
+                hx-on::after-request="if(event.detail.successful) toggleAddForm(); showToast('Product added successfully!', 'success');">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="title">Product Title</label>
+                        <input type="text" class="form-control" id="title" name="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="price">Price</label>
+                        <input type="number" class="form-control" id="price" name="price" step="0.01" min="0" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="imageUrl">Image URL</label>
+                    <input type="url" class="form-control" id="imageUrl" name="imageUrl">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="description">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i>
+                        Save Product
+                    </button>
+                    <button type="button" class="btn btn-danger" onclick="toggleAddForm()">
+                        <i class="fas fa-times"></i>
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Products Table -->
+        <div class="table-container">
+            <div class="loading" style="display: none;">
+                <i class="fas fa-spinner fa-spin"></i>
+                Loading products...
+            </div>
+
+            <div id="products-table">
+                <div class="empty-state">
+                    <i class="fas fa-box-open fa-3x"
+                        style="color: var(--wa-color-gray-400); margin-bottom: var(--wa-spacing-md);"></i>
+                    <h3>No products loaded</h3>
+                    <p>Click "Load Products" to fetch products from the database</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal Container -->
+    <div id="edit-modal"></div>
+
+    <!-- Toast notification -->
+    <div id="toast" class="toast"></div>
+
+    <script>
+        function toggleAddForm() {
+            const form = document.getElementById('add-product-form');
+            const btn = document.getElementById('add-product-btn');
+
+            if (form.classList.contains('show')) {
+                form.classList.remove('show');
+                btn.innerHTML = '<i class="fas fa-plus"></i> Add Product';
+                // Reset form
+                form.querySelector('form').reset();
+            } else {
+                form.classList.add('show');
+                btn.innerHTML = '<i class="fas fa-times"></i> Close Form';
+            }
+        }
+
+        function showToast(message, type) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.classList.add('show');
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // HTMX event listeners
+        document.body.addEventListener('htmx:beforeRequest', function (evt) {
+            document.querySelector('.loading').style.display = 'block';
+        });
+
+        document.body.addEventListener('htmx:afterRequest', function (evt) {
+            document.querySelector('.loading').style.display = 'none';
+        });
+
+        document.body.addEventListener('htmx:responseError', function (evt) {
+            showToast('An error occurred. Please try again.', 'error');
+        });
+    </script>
+</body>
+
+</html>
