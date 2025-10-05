@@ -24,6 +24,7 @@ class ProductRepository(private val jdbcClient: JdbcClient) {
                 description = EXCLUDED.description,
                 variants = EXCLUDED.variants,
                 updated_at = CURRENT_TIMESTAMP
+            RETURNING id
         """.trimIndent()
 
         jdbcClient.sql(sql)

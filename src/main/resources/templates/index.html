@@ -321,7 +321,7 @@
         <div class="form-container" id="add-product-form">
             <h3><i class="fas fa-plus-circle"></i> Add New Product</h3>
             <form hx-post="/products/add" hx-target="#products-table"
-                hx-on::after-request="if(event.detail.successful) toggleAddForm(); showToast('Product added successfully!', 'success');">
+                hx-on::after-request="if(event.detail.successful) { this.reset(); toggleAddForm(); showToast('Product added successfully!', 'success'); }">
 
                 <div class="form-row">
                     <div class="form-group">
